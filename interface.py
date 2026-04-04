@@ -3,13 +3,11 @@ import streamlit as st
 def apply_custom_css():
     st.markdown("""
         <style>
-            /* 1. MAKE THE SIDEBAR LOOK MODERN */
+        
             [data-testid="stSidebar"] {
                 min-width: 250px !important;
             }
 
-            /* 2. STYLE THE BUTTONS TO LOOK LIKE MENU ITEMS */
-            /* This makes the buttons take full width and removes the 'button' border look */
             [data-testid="stSidebar"] button {
                 border: none !important;
                 text-align: left !important;
@@ -24,10 +22,20 @@ def apply_custom_css():
                 display: none !important;
             }
 
-            /* 4. MAKE THE PROFILE TEXT LOOK NICE */
             [data-testid="stSidebar"] p {
                 font-size: 1rem !important;
                 margin-bottom: 0px !important;
+            }
+
+            [data-testid="stSidebar"] h3 {
+                font-size: 4rem !important; /* Adjust this number to go even bigger! */
+                text-align: center;
+                margin-bottom: 0px !important;
+                padding-top: 10px;
+            }
+
+            [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
+                text-align: center;
             }
         </style>
     """, unsafe_allow_html=True)
