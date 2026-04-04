@@ -46,25 +46,32 @@ def apply_custom_css():
     """, unsafe_allow_html=True)
 
 def show_sidebar():
-    """Renders the hoverable sidebar and returns the user's menu choice"""
     with st.sidebar:
         st.markdown(f"### 👤")
         st.write(f"**{st.session_state.full_name}**")
         st.caption(f"{st.session_state.user_email}")
         st.write("---")
         
-        choice = st.radio(
-            "Menu",
-            ["🧞‍♂️ Search", "⚙️ Profile"],
-            label_visibility="collapsed"
-        )
+        # Initialize the menu choice if it doesn't exist
+        if "menu_choice" not in st.session_state:
+            st.session_state.menu_choice = "🧞‍♂️ Search"
+
+        # Create custom buttons that look like menu items
+        if st.button("🧞‍♂️ Search", use_container_width=True, type="primary" if st.session_state.menu_choice == "🧞‍♂️ Search" else "secondary"):
+            st.session_state.menu_choice = "🧞‍♂️ Search"
+            st.rerun()
+
+        if st.button("⚙️ Profile", use_container_width=True, type="primary" if st.session_state.menu_choice == "⚙️ Profile" else "secondary"):
+            st.session_state.menu_choice = "⚙️ Profile"
+            st.rerun()
         
         st.write("---")
         if st.button("🚪 Logout", use_container_width=True):
+            # If using Cookie Manager, remember to delete cookie here too!
             st.session_state.logged_in = False
             st.rerun()
             
-    return choice
+    return st.session_state.menu_choice
 
 def show_profile_page():
     """Renders the actual Profile UI"""
