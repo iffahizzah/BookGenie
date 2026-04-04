@@ -27,35 +27,25 @@ def apply_custom_css():
                 margin-bottom: 0px !important;
             }
 
-            [data-testid="stSidebar"] h3 {
-                font-size: 4rem !important; /* Adjust this number to go even bigger! */
-                text-align: center;
-                margin-bottom: 0px !important;
-                padding-top: 10px;
-            }
-
-            [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
-                text-align: center;
-            }
         </style>
     """, unsafe_allow_html=True)
 
 def show_sidebar():
     with st.sidebar:
-        st.markdown(f"### 👤 User")
+        st.markdown(f"### 🧞‍♂️")
         st.write(f"**{st.session_state.full_name}**")
         st.caption(f"{st.session_state.user_email}")
         st.write("---")
         
         # Initialize choice if not set
         if "menu_choice" not in st.session_state:
-            st.session_state.menu_choice = "🧞‍♂️ Search"
+            st.session_state.menu_choice = "🏠 Home"
 
         # MENU BUTTONS
         # 'primary' makes it blue, 'secondary' makes it gray
-        if st.button("🧞‍♂️ Search", use_container_width=True, 
-                     type="primary" if st.session_state.menu_choice == "🧞‍♂️ Search" else "secondary"):
-            st.session_state.menu_choice = "🧞‍♂️ Search"
+        if st.button("🏠 Home", use_container_width=True, 
+                     type="primary" if st.session_state.menu_choice == "🏠 Home" else "secondary"):
+            st.session_state.menu_choice = "🏠 Home"
             st.rerun()
 
         if st.button("⚙️ Profile", use_container_width=True, 
