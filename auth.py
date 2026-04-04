@@ -50,8 +50,8 @@ def show_auth_page(st_supabase):
                 
                 if res.data and check_password(login_pw, res.data[0]['password_hash']):
                     st.session_state.logged_in = True
-                    # Store the user's name to greet them later!
-                    st.session_state.user_name = res.data[0]['full_name']
+                    st.session_state.full_name = res.data[0]['full_name']
+                    st.session_state.user_email = res.data[0]['email']
                     st.rerun()
                 else:
                     st.error("Invalid email or password")
