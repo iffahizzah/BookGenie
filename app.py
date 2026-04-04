@@ -22,7 +22,7 @@ if is_authenticated:
     menu_choice = show_sidebar()
     
     if menu_choice == "⚙️ Profile":
-        show_profile_page()
+        show_profile_page(st_supabase)
         
     else:
         # 3. LOAD AI ASSETS
