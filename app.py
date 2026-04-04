@@ -13,7 +13,7 @@ st.set_page_config(page_title="BookGenie AI", page_icon="🧞‍♂️", layout=
 st_supabase = st.connection("supabase", type=SupabaseConnection)
 
 # 2. SECURITY GATE
-is_authenticated = show_auth_page(st_supabase)
+is_authenticated = show_auth_page(st_supabase, cookie_manager)
 
 if is_authenticated:    
     apply_custom_css()
