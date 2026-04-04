@@ -3,43 +3,49 @@ import streamlit as st
 def apply_custom_css():
     st.markdown("""
         <style>
-            /* 1. Reset sidebar to a normal fixed width */
+            /* 1. Sidebar Width */
             [data-testid="stSidebar"] {
                 min-width: 250px !important;
             }
 
-            /* 2. HIDE THE RADIO CIRCLES ONLY */
-            /* This targets the little round dot container */
-            [data-testid="stSidebar"] div[role="radiogroup"] .st-emotion-cache-6q9sum,
-            [data-testid="stSidebar"] div[role="radiogroup"] div[data-testid="stMarkdownContainer"] ~ div {
+            /* 2. THE CIRCLE VANISHER */
+            /* This hides the radio button circle container entirely */
+            [data-testid="stSidebar"] [data-testid="stWidgetLabel"] + div div[data-baseweb="radio"] > div:first-child {
                 display: none !important;
             }
+            
+            /* Remove the default dot/circle padding */
+            [data-testid="stSidebar"] label[data-baseweb="radio"] {
+                padding-left: 0px !important;
+            }
 
-            /* 3. STYLE THE MENU ITEMS (HOVER EFFECT) */
+            /* 3. MENU ITEM STYLING */
             [data-testid="stSidebar"] div[role="radiogroup"] label {
-                padding: 10px 15px !important;
+                padding: 12px 15px !important;
                 border-radius: 8px !important;
-                margin-bottom: 4px !important;
-                transition: background-color 0.2s;
+                margin-bottom: 6px !important;
+                transition: all 0.2s ease;
                 cursor: pointer;
+                width: 100% !important;
             }
 
-            /* The Hover Color */
+            /* Hover Effect */
             [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-                background-color: rgba(151, 166, 195, 0.15) !important;
+                background-color: rgba(151, 166, 195, 0.1) !important;
             }
 
-            /* The Active/Selected Color (Light Blue Tint) */
+            /* Active/Selected Effect (Blue highlight with bar) */
             [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
-                background-color: rgba(0, 123, 255, 0.1) !important;
-                border-left: 4px solid #007bff !important;
-                border-radius: 4px 8px 8px 4px !important;
+                background-color: rgba(0, 123, 255, 0.15) !important;
+                border-left: 5px solid #007bff !important;
+                border-radius: 2px 8px 8px 2px !important;
             }
 
-            /* 4. Ensure Sidebar Text is Always Visible */
-            [data-testid="stSidebar"] p, [data-testid="stSidebar"] span {
-                opacity: 1 !important;
-                color: inherit !important;
+            /* 4. Text Alignment Fix */
+            /* Ensures text stays left-aligned now that the circle is gone */
+            [data-testid="stSidebar"] div[role="radiogroup"] label div[data-testid="stMarkdownContainer"] p {
+                font-size: 1.1rem !important;
+                margin-left: 0px !important;
             }
         </style>
     """, unsafe_allow_html=True)
