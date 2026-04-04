@@ -67,20 +67,38 @@ def show_sidebar():
             
     return st.session_state.menu_choice
 
-def show_profile_page():
+def show_profile_page(st_supabase):
     st.title("👤 User Profile")
-    st.info(f"Welcome to your settings, **{st.session_state.full_name}**.")
+    st.info(f"Signed in as **{st.session_state.full_name}**")
     
     col1, col2 = st.columns(2)
+    
     with col1:
         st.subheader("Account Details")
         st.write(f"**Name:** {st.session_state.full_name}")
         st.write(f"**Email:** {st.session_state.user_email}")
-    with col2:
-        st.subheader("Preferences")
-        st.toggle("Dark Mode (Auto)", value=True, disabled=True)
-        st.button("Update Password", disabled=True)
+        st.caption("Contact the admin to change your registered email.")
 
+    with col2:
+        st.subheader("Security")
+        with st.expander("🔐 Change Password"):
+            new_pw = st.text_input("New Password", type="password")
+            confirm_pw = st.text_input("Confirm New Password", type="password")
+            
+            if st.button("Update Password"):
+                if new_pw != confirm_pw:
+                    st.error("Passwords do not match!")
+                elif len(new_pw) < 6:
+                    st.error("Password must be at least 6 characters.")
+                else:
+                    from auth import hash_password # Import your hashing function
+                    hashed = hash_password(new_pw)
+                    try:
+                        st_supabase.table("users").update({"password_hash": hashed}).eq("email", st.session_state.user_email).execute()
+                        st.success("Password updated successfully!")
+                    except Exception as e:
+                        st.error("Failed to update password.")
+                        
 def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_predictions, get_recommendations, np):
     st.title("🧞‍♂️ BookGenie: Your AI Librarian")
     st.markdown(f"Welcome back! Type a book summary below, and I'll find its genre and similar reads!")
