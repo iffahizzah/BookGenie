@@ -16,23 +16,45 @@ def show_auth_page(st_supabase):
         tab1, tab2 = st.tabs(["Login", "Sign Up"])
         
         with tab2:
-            new_user = st.text_input("Choose Username", key="signup_user")
-            new_pass = st.text_input("Choose Password", type="password", key="signup_pass")
-            if st.button("Create Account"):
-                hashed = hash_password(new_pass)
-                st_supabase.table("users").insert({"username": new_user, "password_hash": hashed}).execute()
-                st.success("Account created! Please log in.")
+            st.subheader("Create New Account")
+            new_name = st.text_input("Full Name")
+            new_email = st.text_input("Email Address")
+            new_pass = st.text_input("Password", type="password")
+            confirm_pass = st.text_input("Confirm Password", type="password")
+            
+            if st.button("Register Account"):
+                if not new_name or not new_email or not new_pass:
+                    st.error("Please fill in all fields.")
+                elif new_pass != confirm_pass:
+                    st.error("Passwords do not match!")
+                else:
+                    try:
+                        hashed = hash_password(new_pass)
+                        st_supabase.table("users").insert({
+                            "full_name": new_name, 
+                            "email": new_email.lower().strip(), 
+                            "password_hash": hashed
+                        }).execute()
+                        st.success("Registration successful! Switch to the Login tab.")
+                    except Exception as e:
+                        st.error("This email might already be registered.")
 
         with tab1:
-            user = st.text_input("Username", key="login_user")
-            pw = st.text_input("Password", type="password", key="login_pass")
+            st.subheader("Welcome Back")
+            login_email = st.text_input("Email Address", key="l_email")
+            login_pw = st.text_input("Password", type="password", key="l_pass")
+            
             if st.button("Login"):
-                res = st_supabase.table("users").select("*").eq("username", user).execute()
-                if res.data and check_password(pw, res.data[0]['password_hash']):
+                # Search by Email instead of Username
+                res = st_supabase.table("users").select("*").eq("email", login_email.lower().strip()).execute()
+                
+                if res.data and check_password(login_pw, res.data[0]['password_hash']):
                     st.session_state.logged_in = True
+                    # Store the user's name to greet them later!
+                    st.session_state.user_name = res.data[0]['full_name']
                     st.rerun()
                 else:
-                    st.error("Invalid credentials")
-        return False # Tells app.py: "Stop! They aren't logged in yet."
+                    st.error("Invalid email or password")
+        return False
     
-    return True # Tells app.py: "Keep going, they're in!"
+    return True
