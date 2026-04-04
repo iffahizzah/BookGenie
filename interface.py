@@ -7,7 +7,7 @@ def apply_custom_css():
             [data-testid="stSidebar"] {
                 min-width: 250px !important;
                 max-width: 250px !important;
-                background-color: #f8f9fa; /* Light clean background */
+                /* background-color: #f8f9fa; Light clean background */
             }
 
             /* 2. HIDE THE ROUND RADIO BUTTONS */
