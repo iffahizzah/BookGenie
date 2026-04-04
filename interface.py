@@ -1,22 +1,44 @@
 import streamlit as st
 
 def apply_custom_css():
-    """Injects the hover-effect CSS for the sidebar"""
     st.markdown("""
         <style>
+            /* 1. Set the transition for a smooth grow/shrink */
             [data-testid="stSidebar"] {
-                min-width: 80px;
-                max-width: 80px;
+                min-width: 80px !important;
+                max-width: 80px !important;
                 transition: all 0.3s ease-in-out;
                 overflow-x: hidden;
             }
+            
+            /* 2. Expand on hover */
             [data-testid="stSidebar"]:hover {
-                min-width: 300px;
-                max-width: 300px;
+                min-width: 300px !important;
+                max-width: 300px !important;
             }
-            /* Adjusts the main content to not overlap */
-            .main .block-container {
-                padding-left: 5rem;
+
+            /* 3. HIDE TEXT LABELS BY DEFAULT (The "Falling Text" fix) */
+            /* This targets the sidebar navigation labels and button text */
+            [data-testid="stSidebarNavItems"] span, 
+            [data-testid="stSidebar"] .stMarkdown p,
+            [data-testid="stSidebar"] button div p {
+                opacity: 0;
+                transition: opacity 0.2s ease-in-out;
+                white-space: nowrap;
+            }
+
+            /* 4. SHOW TEXT ON HOVER */
+            [data-testid="stSidebar"]:hover [data-testid="stSidebarNavItems"] span,
+            [data-testid="stSidebar"]:hover .stMarkdown p,
+            [data-testid="stSidebar"]:hover button div p {
+                opacity: 1;
+            }
+            
+            /* 5. Fix for the Logout button specifically */
+            [data-testid="stSidebar"] button {
+                border: none !important;
+                justify-content: flex-start !important;
+                padding-left: 15px !important;
             }
         </style>
     """, unsafe_allow_html=True)
