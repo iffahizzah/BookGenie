@@ -7,7 +7,7 @@ def get_predictions(text, model, tokenizer, mlb):
     with torch.no_grad():
         logits = model(**inputs).logits
         probs = torch.sigmoid(logits).cpu().numpy()[0]
-    predictions = (probs > 0.3).astype(int)
+    predictions = (probs > 0.26).astype(int)
     return mlb.inverse_transform(predictions.reshape(1, -1))[0]
 
 def get_recommendations(text, model, tokenizer, library_embeddings, df):
