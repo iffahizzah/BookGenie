@@ -7,3 +7,4 @@ scikit-learn
 joblib
 st-supabase-connection
 bcrypt
+extra-streamlit-components
