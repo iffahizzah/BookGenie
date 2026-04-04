@@ -8,7 +8,7 @@ def hash_password(password):
 def check_password(password, hashed):
     return bcrypt.checkpw(password.encode(), hashed.encode())
 
-def show_auth_page(st_supabase):
+def show_auth_page(st_supabase, cookie_manager):
     if 'logged_in' not in st.session_state:
         st.session_state.logged_in = False
 
