@@ -125,14 +125,14 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                         st.warning("General Fiction")
     
                 with col2:
-                    st.subheader("📚 Top 5 Recommendations")
+                    st.subheader("📚 More Books Like This")
                     for i in range(len(recs_df)):
                         book = recs_df.iloc[i]
                         score = scores[i]
                         with st.expander(f"📖 {book['title']}"):
-                            st.write(f"**Similarity Match:** {np.round(score * 100, 2)}%")
-                            st.write(f"**Genres:** {book.get('revised_genres', 'N/A')}")
-                            st.write("---")
+                            #st.write(f"**Similarity Match:** {np.round(score * 100, 2)}%")
+                            #st.write(f"**Genres:** {book.get('revised_genres', 'N/A')}")
+                            #st.write("---")
                             st.write(f"_{book['description']}_")
         else:
             st.error("Please enter a description first!")
