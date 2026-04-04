@@ -11,6 +11,7 @@ from interface import apply_custom_css, show_sidebar, show_profile_page, show_ma
 # 1. SETUP
 st.set_page_config(page_title="BookGenie AI", page_icon="🧞‍♂️", layout="wide")
 st_supabase = st.connection("supabase", type=SupabaseConnection)
+cookie_manager = stx.CookieManager()
 
 # 2. SECURITY GATE
 is_authenticated = show_auth_page(st_supabase, cookie_manager)
