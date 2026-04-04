@@ -56,3 +56,48 @@ def show_profile_page():
         st.subheader("Preferences")
         st.toggle("Dark Mode (Auto)", value=True, disabled=True)
         st.button("Update Password", disabled=True)
+
+def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_predictions, get_recommendations, np):
+    """Renders the Search and Results UI"""
+    st.title("🧞‍♂️ BookGenie: Your AI Librarian")
+    st.markdown(f"Welcome back! Type a book summary below, and I'll find its genre and similar reads!")
+    
+    user_query = st.text_area(
+        "What kind of story is on your mind?", 
+        height=150, 
+        placeholder="e.g., A detective solving a mystery in a futuristic city..."
+    )
+    
+    if st.button("✨ Work Your Magic"):
+        if user_query:
+            with st.spinner("The Genie is reading..."):
+                # A. Call the Identifier
+                genres = get_predictions(user_query, model, tokenizer, mlb)
+    
+                # B. Call the Recommender
+                recs_df, scores = get_recommendations(user_query, model, tokenizer, library_embeddings, df)
+    
+                # C. DISPLAY RESULTS
+                st.divider()
+                col1, col2 = st.columns([1, 2])
+    
+                with col1:
+                    st.subheader("🏷️ Identified Genres")
+                    if len(genres) > 0:
+                        for g in genres:
+                            st.success(f"✅ {g}")
+                    else:
+                        st.warning("General Fiction")
+    
+                with col2:
+                    st.subheader("📚 Top 5 Recommendations")
+                    for i in range(len(recs_df)):
+                        book = recs_df.iloc[i]
+                        score = scores[i]
+                        with st.expander(f"📖 {book['title']}"):
+                            st.write(f"**Similarity Match:** {np.round(score * 100, 2)}%")
+                            st.write(f"**Genres:** {book.get('revised_genres', 'N/A')}")
+                            st.write("---")
+                            st.write(f"_{book['description']}_")
+        else:
+            st.error("Please enter a description first!")
