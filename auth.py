@@ -1,5 +1,6 @@
 import streamlit as st
 import bcrypt
+import extra_streamlit_components as stx
 
 def hash_password(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
@@ -45,13 +46,15 @@ def show_auth_page(st_supabase):
             login_pw = st.text_input("Password", type="password", key="l_pass")
             
             if st.button("Login"):
-                # Search by Email instead of Username
                 res = st_supabase.table("users").select("*").eq("email", login_email.lower().strip()).execute()
                 
                 if res.data and check_password(login_pw, res.data[0]['password_hash']):
                     st.session_state.logged_in = True
                     st.session_state.full_name = res.data[0]['full_name']
                     st.session_state.user_email = res.data[0]['email']
+
+                    cookie_manager.set("bookgenie_user_email", res.data[0]['email'], key="set_login_cookie")
+                    
                     st.rerun()
                 else:
                     st.error("Invalid email or password")
