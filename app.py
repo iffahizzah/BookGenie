@@ -34,14 +34,14 @@ if is_authenticated:
     # Initialize assets
     model, tokenizer, mlb, df, library_embeddings = load_assets()
     
-    # 3. SIDEBAR
+    # SIDEBAR
     with st.sidebar:
         st.title("📖 About BookGenie")
         st.info("This AI uses a BERT model to analyze story summaries and recommend similar books.")
         st.write("---")
         st.caption("Final Year Project 2026")
     
-    # 4. MAIN INTERFACE
+    # MAIN INTERFACE
     st.title("🧞‍♂️ BookGenie: Your AI Librarian")
     st.markdown("Type a book summary or a story idea below, and I'll find its genre and similar reads!")
     
