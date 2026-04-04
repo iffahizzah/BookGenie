@@ -3,38 +3,44 @@ import streamlit as st
 def apply_custom_css():
     st.markdown("""
         <style>
-            /* 1. BANISH THE RADIO CIRCLE (NEW STRONGER SELECTOR) */
-            [data-testid="stSidebar"] [data-testid="stWidgetLabel"] + div [data-baseweb="radio"] div:first-child {
+            /* 1. HIDE THE CIRCLE WITHOUT HIDING TEXT */
+            /* This targets the SVG circle specifically */
+            [data-testid="stSidebar"] div[role="radiogroup"] label [data-baseweb="radio"] div:first-child {
                 display: none !important;
-                width: 0px !important;
             }
             
+            /* Remove the gap left by the missing circle */
+            [data-testid="stSidebar"] div[role="radiogroup"] label {
+                padding-left: 10px !important;
+                margin-left: -15px !important;
+                min-height: 45px !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
             /* 2. REMOVE "PRESS ENTER TO APPLY" */
             [data-testid="stFieldDescription"] {
                 display: none !important;
             }
 
-            /* 3. SIDEBAR STYLING */
-            [data-testid="stSidebar"] {
-                min-width: 250px !important;
+            /* 3. ENSURE TEXT IS VISIBLE */
+            [data-testid="stSidebar"] p {
+                opacity: 1 !important;
+                color: white !important; /* Force visibility */
+                font-size: 1.1rem !important;
+                margin: 0 !important;
             }
 
-            [data-testid="stSidebar"] div[role="radiogroup"] label {
-                padding: 10px 15px !important;
-                border-radius: 8px !important;
-                margin-bottom: 6px !important;
-                transition: all 0.2s ease;
-                cursor: pointer;
-            }
-
-            /* Hover and Active states */
+            /* 4. HOVER & ACTIVE STATE */
             [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-                background-color: rgba(151, 166, 195, 0.1) !important;
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                border-radius: 8px;
             }
 
             [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
-                background-color: rgba(0, 123, 255, 0.15) !important;
+                background-color: rgba(0, 123, 255, 0.2) !important;
                 border-left: 5px solid #007bff !important;
+                border-radius: 2px 8px 8px 2px;
             }
         </style>
     """, unsafe_allow_html=True)
