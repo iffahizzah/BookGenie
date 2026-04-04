@@ -7,6 +7,7 @@ from engine import get_predictions, get_recommendations
 from st_supabase_connection import SupabaseConnection
 from auth import show_auth_page
 from interface import apply_custom_css, show_sidebar, show_profile_page, show_main_genie_page
+import extra_streamlit_components as stx
 
 # 1. SETUP
 st.set_page_config(page_title="BookGenie AI", page_icon="🧞‍♂️", layout="wide")
