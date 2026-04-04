@@ -3,42 +3,55 @@ import streamlit as st
 def apply_custom_css():
     st.markdown("""
         <style>
-            /* 1. Set the transition for a smooth grow/shrink */
+            /* 1. Sidebar Width & Background */
             [data-testid="stSidebar"] {
-                min-width: 80px !important;
-                max-width: 80px !important;
-                transition: all 0.3s ease-in-out;
-                overflow-x: hidden;
-            }
-            
-            /* 2. Expand on hover */
-            [data-testid="stSidebar"]:hover {
-                min-width: 300px !important;
-                max-width: 300px !important;
+                min-width: 250px !important;
+                max-width: 250px !important;
+                background-color: #f8f9fa; /* Light clean background */
             }
 
-            /* 3. HIDE TEXT LABELS BY DEFAULT (The "Falling Text" fix) */
-            /* This targets the sidebar navigation labels and button text */
-            [data-testid="stSidebarNavItems"] span, 
-            [data-testid="stSidebar"] .stMarkdown p,
-            [data-testid="stSidebar"] button div p {
-                opacity: 0;
-                transition: opacity 0.2s ease-in-out;
-                white-space: nowrap;
-            }
-
-            /* 4. SHOW TEXT ON HOVER */
-            [data-testid="stSidebar"]:hover [data-testid="stSidebarNavItems"] span,
-            [data-testid="stSidebar"]:hover .stMarkdown p,
-            [data-testid="stSidebar"]:hover button div p {
-                opacity: 1;
+            /* 2. HIDE THE ROUND RADIO BUTTONS */
+            [data-testid="stSidebar"] .st-emotion-cache-1673787, 
+            [data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
+                display: none;
             }
             
-            /* 5. Fix for the Logout button specifically */
-            [data-testid="stSidebar"] button {
-                border: none !important;
-                justify-content: flex-start !important;
-                padding-left: 15px !important;
+            /* Hide the actual circles/dots */
+            [data-testid="stSidebar"] div[role="radiogroup"] label div[data-testid="stMarkdownContainer"] p {
+                margin-left: -25px; /* Pull text to the left since dot is gone */
+            }
+
+            /* 3. STYLE THE MENU ITEMS */
+            [data-testid="stSidebar"] div[role="radiogroup"] label {
+                padding: 12px 20px !important;
+                border-radius: 10px !important;
+                margin-bottom: 5px !important;
+                transition: all 0.2s ease;
+                cursor: pointer;
+                width: 100% !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
+            /* 4. SELECTION EFFECT (The Blue Box) */
+            /* This targets the selected item */
+            [data-testid="stSidebar"] div[role="radiogroup"] label[data-baseweb="radio"] div:first-child {
+                display: none !important; /* Hides the radio circle container entirely */
+            }
+
+            [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
+                background-color: #007bff !important; /* Your signature blue */
+                color: white !important;
+            }
+            
+            [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p {
+                color: white !important;
+                font-weight: bold !important;
+            }
+
+            /* 5. HOVER EFFECT (Light gray highlight) */
+            [data-testid="stSidebar"] div[role="radiogroup"] label:hover:not(:has(input:checked)) {
+                background-color: #e9ecef !important;
             }
         </style>
     """, unsafe_allow_html=True)
