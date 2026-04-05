@@ -93,7 +93,7 @@ def show_profile_page(st_supabase):
                         
 def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_predictions, get_recommendations, np, st_supabase):
     st.title("🧞‍♂️ BookGenie: Your AI Librarian")
-    st.markdown(f"Welcome back! Type a book summary below, and I'll find its genre and similar reads!")
+    st.markdown(f"Welcome back! Type a book summary below, and I'll find its genre and top 5 similar reads!")
     
     user_query = st.text_area(
         "What kind of story is on your mind?", 
@@ -102,7 +102,7 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
     )
     
     # 1. SEARCH SECTION
-    if st.button("✨ Work Your Magic"):
+    if st.button("Submit"):
         if user_query:
             with st.spinner("The Genie is reading..."):
                 st.session_state.genres = get_predictions(user_query, model, tokenizer, mlb)
