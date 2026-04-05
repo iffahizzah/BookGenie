@@ -38,6 +38,7 @@ def show_library_page(st_supabase, df_books):
                 
                 with col2:
                     st.subheader(book['title'])
+                    st.caption(f"Book Description: {book['description']}")
                     st.caption(f"Genres: {book['genres']}")
                     st.write(f"**Your Rating:** {'⭐' * item['rating']}")
                     st.info(f"**Review:** {item['review']}")
