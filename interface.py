@@ -32,21 +32,26 @@ def show_sidebar():
         st.write("---")
         
         if "menu_choice" not in st.session_state:
-            st.session_state.menu_choice = "🏠 Home"
+            st.session_state.menu_choice = "Home"
 
-        if st.button("🏠 Home", use_container_width=True, 
-                     type="primary" if st.session_state.menu_choice == "🏠 Home" else "secondary"):
-            st.session_state.menu_choice = "🏠 Home"
+        if st.button("Home", use_container_width=True, 
+                     type="primary" if st.session_state.menu_choice == "Home" else "secondary"):
+            st.session_state.menu_choice = "Home"
             st.rerun()
 
-        if st.button("⚙️ Profile", use_container_width=True, 
-                     type="primary" if st.session_state.menu_choice == "⚙️ Profile" else "secondary"):
-            st.session_state.menu_choice = "⚙️ Profile"
+        if st.button("My Library", use_container_width=True, 
+                     type="primary" if st.session_state.menu_choice == "My Library" else "secondary"):
+            st.session_state.menu_choice = "My Library"
+            st.rerun()
+
+        if st.button("Profile", use_container_width=True, 
+                     type="primary" if st.session_state.menu_choice == "Profile" else "secondary"):
+            st.session_state.menu_choice = "Profile"
             st.rerun()
         
         st.write("---")
         
-        if st.button("🚪 Logout", use_container_width=True):
+        if st.button("Logout", use_container_width=True):
             if 'cookie_manager' in st.session_state:
                 st.session_state.cookie_manager.delete("bookgenie_user_email")
             st.session_state.logged_in = False
