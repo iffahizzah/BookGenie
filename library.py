@@ -37,14 +37,28 @@ def show_library_page(st_supabase, df_books):
                 col1, col2 = st.columns([1, 4])
                 
                 with col1:
+                # 🧞‍♂️ OPTION: Replace the link below with a real book cover URL if you have one!
+                # If you want to use a specific local image, use "assets/default_cover.jpg"
+                default_book_image = "https://images.unsplash.com/photo-1543005128-d39eef68007a?auto=format&fit=crop&q=80&w=150&h=225"
+                
+                # You can change this 'False' to 'True' if you want to use the default image
+                use_placeholder_image = True 
+            
+                if use_placeholder_image:
+                    st.image(default_book_image, use_container_width=True)
+                else:
+                    # This is a fixed version of your current box to make it look "balanced"
                     st.markdown("""
-                        <div style="background-color: #262730; border-radius: 10px; height: 150px; display: flex; align-items: center; justify-content: center; border: 1px solid #464b5d;">
-                            <h1 style="margin:0;">📘</h1>
+                        <div style="background-color: #1E1E1E; border-radius: 8px; height: 180px; 
+                                    display: flex; align-items: center; justify-content: center; 
+                                    border: 1px solid #333;">
+                            <span style="font-size: 80px;">📘</span>
                         </div>
                     """, unsafe_allow_html=True)
                 
                 with col2:
                     st.subheader(book['title'])
+                    st.captain(f"Book Summary: {book['description']}") 
                     st.caption(f"Genres: {book['genres']}") 
                     
                     st.write(f"**Your Rating:** {'⭐' * item['rating']}")
@@ -67,7 +81,7 @@ def show_library_page(st_supabase, df_books):
                                 }).eq("id", item['id']).execute()
                                 
                                 # 2. Show a "Toast" notification (more modern than st.success)
-                                st.toast(f"✅ Changes saved for {book['title']}!", icon='🧞‍♂️')
+                                st.toast(f"Changes saved for {book['title']}!")
                                 
                                 # 3. Brief pause so they can actually see the toast before the rerun
                                 import time
