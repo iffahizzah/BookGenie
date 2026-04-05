@@ -122,7 +122,8 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                 book = st.session_state.recs_df.iloc[i]
                 book_id = book['book_id']
                 
-                with st.expander(f"📖 {book['title']}", expanded=True):
+                # Set expanded=False so they don't all pop open at once
+                with st.expander(f"📖 {book['title']}", expanded=False):
                     st.write(f"_{book['description']}_")
                     st.divider()
                     
@@ -131,17 +132,19 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                     u_review = st.text_input("Comments:", key=f"rev_{book_id}")
 
                     if st.button("Submit to Library", key=f"btn_{book_id}"):
-                        if not st.session_state.get("user_id"):
+                        # Safety check for user_id
+                        user_id = st.session_state.get("user_id")
+                        if not user_id:
                             st.error("User ID not found. Please log in again.")
                         else:
                             try:
                                 data = {
-                                    "user_id": st.session_state.user_id,
+                                    "user_id": user_id,
                                     "book_id": int(book_id),
                                     "rating": u_rating if u_rating is not None else 0,
                                     "review": u_review
                                 }
-                            st_supabase.table("user_interactions").insert(data).execute()
-                            st.success("Saved to the Book Club! 🥂")
-                        except Exception as e:
-                            st.error(f"Error: {e}")
+                                st_supabase.table("user_interactions").insert(data).execute()
+                                st.success("Saved to the Book Club! 🥂")
+                            except Exception as e:
+                                st.error(f"Error: {e}")
