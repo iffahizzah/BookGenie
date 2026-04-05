@@ -52,7 +52,7 @@ if is_authenticated:
         show_profile_page(st_supabase)
 
     elif menu_choice == "My Library":
-        library.show_library_page(st_supabase, df)
+        library.show_library_page(st_supabase, df_books)
         
     else:
         from interface import show_main_genie_page # Import here or at top
