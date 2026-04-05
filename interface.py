@@ -3,11 +3,9 @@ import streamlit as st
 def apply_custom_css():
     st.markdown("""
         <style>
-        
             [data-testid="stSidebar"] {
                 min-width: 250px !important;
             }
-
             [data-testid="stSidebar"] button {
                 border: none !important;
                 text-align: left !important;
@@ -16,17 +14,13 @@ def apply_custom_css():
                 height: 45px !important;
                 margin-bottom: 5px !important;
             }
-
-            /* 3. HIDE "PRESS ENTER TO APPLY" ON ALL INPUTS */
             [data-testid="stFieldDescription"] {
                 display: none !important;
             }
-
             [data-testid="stSidebar"] p {
                 font-size: 1rem !important;
                 margin-bottom: 0px !important;
             }
-
         </style>
     """, unsafe_allow_html=True)
 
@@ -37,12 +31,9 @@ def show_sidebar():
         st.caption(f"{st.session_state.user_email}")
         st.write("---")
         
-        # Initialize choice if not set
         if "menu_choice" not in st.session_state:
             st.session_state.menu_choice = "🏠 Home"
 
-        # MENU BUTTONS
-        # 'primary' makes it blue, 'secondary' makes it gray
         if st.button("🏠 Home", use_container_width=True, 
                      type="primary" if st.session_state.menu_choice == "🏠 Home" else "secondary"):
             st.session_state.menu_choice = "🏠 Home"
@@ -55,9 +46,7 @@ def show_sidebar():
         
         st.write("---")
         
-        # LOGOUT BUTTON
         if st.button("🚪 Logout", use_container_width=True):
-            # If you implemented Cookie Manager, add deletion here
             if 'cookie_manager' in st.session_state:
                 st.session_state.cookie_manager.delete("bookgenie_user_email")
             st.session_state.logged_in = False
@@ -89,7 +78,7 @@ def show_profile_page(st_supabase):
                 elif len(new_pw) < 6:
                     st.error("Password must be at least 6 characters.")
                 else:
-                    from auth import hash_password # Import your hashing function
+                    from auth import hash_password 
                     hashed = hash_password(new_pw)
                     try:
                         st_supabase.table("users").update({"password_hash": hashed}).eq("email", st.session_state.user_email).execute()
@@ -111,14 +100,13 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
     if st.button("✨ Work Your Magic"):
         if user_query:
             with st.spinner("The Genie is reading..."):
-                # Save the results into session_state so they stay on screen
                 st.session_state.genres = get_predictions(user_query, model, tokenizer, mlb)
                 st.session_state.recs_df, st.session_state.scores = get_recommendations(user_query, model, tokenizer, library_embeddings, df)
                 st.session_state.search_done = True
         else:
             st.error("Please enter a description first!")
 
-    # 2. DISPLAY SECTION (This stays visible even if the app reruns!)
+    # 2. DISPLAY SECTION
     if st.session_state.get("search_done"):
         st.divider()
         col1, col2 = st.columns([1, 2])
@@ -139,7 +127,6 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                     st.divider()
                     
                     st.write("**Book Club Feedback**")
-                    # Using the book_id in the key is perfect!
                     u_rating = st.feedback("stars", key=f"star_{book_id}")
                     u_review = st.text_input("Comments:", key=f"rev_{book_id}")
 
@@ -155,5 +142,3 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                             st.success("Saved to the Book Club! 🥂")
                         except Exception as e:
                             st.error(f"Error: {e}")
-        else:
-            st.error("Please enter a description first!")
