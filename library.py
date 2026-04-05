@@ -34,7 +34,7 @@ def show_library_page(st_supabase, df_books):
                 
                 with col1:
                     # Balanced placeholder image
-                    st.image("https://images.unsplash.com/photo-1543005128-d39eef68007a?w=150&h=225&fit=crop", use_container_width=True)
+                    st.image("https://www.iconpacks.net/icons/2/free-opened-book-icon-3163-thumb.png", use_container_width=True)
                 
                 with col2:
                     st.subheader(book['title'])
