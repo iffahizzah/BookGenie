@@ -1,7 +1,7 @@
 import streamlit as st
+import time
 
 def get_user_library(st_supabase, user_id):
-    """Fetch all saved rows for this specific user"""
     try:
         res = st_supabase.table("user_interaction").select("*").eq("user_id", user_id).execute()
         return res.data
@@ -10,24 +10,20 @@ def get_user_library(st_supabase, user_id):
         return []
 
 def show_library_page(st_supabase, df_books):
-    st.title("My BookGenie Library")
+    st.title("📚 My BookGenie Library")
     
     user_id = st.session_state.get('user_id')
-    
     if not user_id:
         st.warning("Please log in to see your saved books!")
         return
 
-    # 1. Fetch the data from Supabase
     user_data = get_user_library(st_supabase, user_id)
 
     if not user_data:
         st.info("Your library is empty. Go find some books to rate!")
         return
 
-    # 2. Loop through and display
     for item in user_data:
-        # Find the book details in your dataframe using 'book_id' (Column E in your CSV)
         book_row = df_books[df_books['book_id'] == item['book_id']]
         
         if not book_row.empty:
@@ -37,55 +33,30 @@ def show_library_page(st_supabase, df_books):
                 col1, col2 = st.columns([1, 4])
                 
                 with col1:
-                # 🧞‍♂️ OPTION: Replace the link below with a real book cover URL if you have one!
-                # If you want to use a specific local image, use "assets/default_cover.jpg"
-                default_book_image = "https://images.unsplash.com/photo-1543005128-d39eef68007a?auto=format&fit=crop&q=80&w=150&h=225"
-                
-                # You can change this 'False' to 'True' if you want to use the default image
-                use_placeholder_image = True 
-            
-                if use_placeholder_image:
-                    st.image(default_book_image, use_container_width=True)
-                else:
-                    # This is a fixed version of your current box to make it look "balanced"
-                    st.markdown("""
-                        <div style="background-color: #1E1E1E; border-radius: 8px; height: 180px; 
-                                    display: flex; align-items: center; justify-content: center; 
-                                    border: 1px solid #333;">
-                            <span style="font-size: 80px;">📘</span>
-                        </div>
-                    """, unsafe_allow_html=True)
+                    # Balanced placeholder image
+                    st.image("https://images.unsplash.com/photo-1543005128-d39eef68007a?w=150&h=225&fit=crop", use_container_width=True)
                 
                 with col2:
                     st.subheader(book['title'])
-                    st.captain(f"Book Summary: {book['description']}") 
-                    st.caption(f"Genres: {book['genres']}") 
-                    
+                    st.caption(f"Genres: {book['genres']}")
                     st.write(f"**Your Rating:** {'⭐' * item['rating']}")
-                    st.info(f"**Your Review:** {item['review']}")
+                    st.info(f"**Review:** {item['review']}")
                     
-                    sub_col1, sub_col2 = st.columns(2)
-                    with sub_col1:
+                    sub1, sub2 = st.columns(2)
+                    with sub1:
                         st.link_button("📖 View on Goodreads", book['url'])
                     
-                    with sub_col2:
+                    with sub2:
                         with st.expander("Edit My Review"):
                             new_rating = st.slider("Rating", 1, 5, int(item['rating']), key=f"r_{item['id']}")
                             new_text = st.text_area("Review", item['review'], key=f"t_{item['id']}")
                             
                             if st.button("Save Changes", key=f"b_{item['id']}"):
-                                # 1. Update the database
                                 st_supabase.table("user_interaction").update({
                                     "rating": new_rating, 
                                     "review": new_text
                                 }).eq("id", item['id']).execute()
                                 
-                                # 2. Show a "Toast" notification (more modern than st.success)
-                                st.toast(f"Changes saved for {book['title']}!")
-                                
-                                # 3. Brief pause so they can actually see the toast before the rerun
-                                import time
+                                st.toast(f"✅ Saved: {book['title']}!", icon='🧞‍♂️')
                                 time.sleep(1)
-                                
-                                # 4. Rerun (this will automatically close the expander)
                                 st.rerun()
