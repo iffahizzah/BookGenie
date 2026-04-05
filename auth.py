@@ -56,7 +56,6 @@ def show_auth_page(st_supabase, cookie_manager):
                 login_email = st.text_input("Email Address", key="l_email")
                 login_pw = st.text_input("Password", type="password", key="l_pass")
 
-                # The "Link" button
                 if st.button("Forgot Password?", type="secondary", help="Click to reset your password"):
                     st.session_state.forgot_password_mode = True
                     st.rerun()
@@ -65,11 +64,16 @@ def show_auth_page(st_supabase, cookie_manager):
                     res = st_supabase.table("users").select("*").eq("email", login_email.lower().strip()).execute()
                     
                     if res.data and check_password(login_pw, res.data[0]['password_hash']):
+                        # ✅ FIXED: Use res.data[0] to get the user info
+                        user_info = res.data[0]
+                        
                         st.session_state.logged_in = True
-                        st.session_state.user_id = user_data['id']
-                        st.session_state.full_name = res.data[0]['full_name']
-                        st.session_state.user_email = res.data[0]['email']
-                        cookie_manager.set("bookgenie_user_email", res.data[0]['email'], key="set_login_cookie")
+                        st.session_state.user_id = user_info['id'] # This is your UUID from Supabase
+                        st.session_state.full_name = user_info['full_name']
+                        st.session_state.user_email = user_info['email']
+                        
+                        # Set cookie for persistence
+                        cookie_manager.set("bookgenie_user_email", user_info['email'], key="set_login_cookie")
                         st.rerun()
                     else:
                         st.error("Invalid email or password")
@@ -100,4 +104,4 @@ def show_auth_page(st_supabase, cookie_manager):
         
         return False 
     
-    return True 
+    return True
