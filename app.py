@@ -43,4 +43,4 @@ if is_authenticated:
             return model.eval(), tokenizer, mlb, df, library_embeddings
         
         model, tokenizer, mlb, df, library_embeddings = load_assets()
-        show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_predictions, get_recommendations, np)
+        show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_predictions, get_recommendations, np, st_supabase)
