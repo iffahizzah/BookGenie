@@ -134,5 +134,18 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                             #st.write(f"**Genres:** {book.get('revised_genres', 'N/A')}")
                             #st.write("---")
                             st.write(f"_{book['description']}_")
+                            user_rating = st.feedback("stars", key=f"star_{rec['book_id']}")
+                            user_review = st.text_input("Leave a comment for the Book Club:", key=f"rev_{rec['book_id']}")
+    
+    if st.button("Submit to Library", key=f"btn_{rec['book_id']}"):
+        # This sends the data to your Supabase table!
+        data = {
+            "user_id": st.session_state.user_id, # From your auth logic
+            "book_id": rec['book_id'],
+            "rating": user_rating,
+            "review": user_review
+        }
+        st_supabase.table("user_interactions").insert(data).execute()
+        st.success("Genie saved your feedback! ✨")
         else:
             st.error("Please enter a description first!")
