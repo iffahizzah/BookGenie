@@ -66,6 +66,7 @@ def show_auth_page(st_supabase, cookie_manager):
                     
                     if res.data and check_password(login_pw, res.data[0]['password_hash']):
                         st.session_state.logged_in = True
+                        st.session_state.user_id = user_data['id']
                         st.session_state.full_name = res.data[0]['full_name']
                         st.session_state.user_email = res.data[0]['email']
                         cookie_manager.set("bookgenie_user_email", res.data[0]['email'], key="set_login_cookie")
