@@ -107,49 +107,53 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
         placeholder="e.g., A detective solving a mystery in a futuristic city..."
     )
     
+    # 1. SEARCH SECTION
     if st.button("✨ Work Your Magic"):
         if user_query:
             with st.spinner("The Genie is reading..."):
-                genres = get_predictions(user_query, model, tokenizer, mlb)
-                recs_df, scores = get_recommendations(user_query, model, tokenizer, library_embeddings, df)
-    
-                st.divider()
-                col1, col2 = st.columns([1, 2])
-    
-                with col1:
-                    st.subheader("🏷️ Identified Genres")
-                    if len(genres) > 0:
-                        for g in genres:
-                            st.success(f"✅ {g}")
-                    else:
-                        st.warning("General Fiction")
-    
-                with col2:
-                    st.subheader("📚 More Books Like This")
-                    for i in range(len(recs_df)):
-                        book = recs_df.iloc[i]
-                        book_id = book['book_id'] # Get the ID from your new CSV
-                        
-                        with st.expander(f"📖 {book['title']}"):
-                            st.write(f"_{book['description']}_")
-                            st.divider()
-                            
-                            # RATING AND REVIEW SECTION
-                            st.write("**Book Club Feedback**")
-                            user_rating = st.feedback("stars", key=f"star_{book_id}")
-                            user_review = st.text_input("Leave a comment:", key=f"rev_{book_id}")
-    
-                            if st.button("Submit to Library", key=f"btn_{book_id}"):
-                                try:
-                                    data = {
-                                        "user_id": st.session_state.user_id,
-                                        "book_id": int(book_id),
-                                        "rating": user_rating if user_rating is not None else 0,
-                                        "review": user_review
-                                    }
-                                    st_supabase.table("user_interactions").insert(data).execute()
-                                    st.success("Genie saved your feedback! ✨")
-                                except Exception as e:
-                                    st.error(f"Error saving: {e}")
+                # Save the results into session_state so they stay on screen
+                st.session_state.genres = get_predictions(user_query, model, tokenizer, mlb)
+                st.session_state.recs_df, st.session_state.scores = get_recommendations(user_query, model, tokenizer, library_embeddings, df)
+                st.session_state.search_done = True
+        else:
+            st.error("Please enter a description first!")
+
+    # 2. DISPLAY SECTION (This stays visible even if the app reruns!)
+    if st.session_state.get("search_done"):
+        st.divider()
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
+            st.subheader("🏷️ Identified Genres")
+            for g in st.session_state.genres:
+                st.success(f"✅ {g}")
+
+        with col2:
+            st.subheader("📚 More Books Like This")
+            for i in range(len(st.session_state.recs_df)):
+                book = st.session_state.recs_df.iloc[i]
+                book_id = book['book_id']
+                
+                with st.expander(f"📖 {book['title']}", expanded=True):
+                    st.write(f"_{book['description']}_")
+                    st.divider()
+                    
+                    st.write("**Book Club Feedback**")
+                    # Using the book_id in the key is perfect!
+                    u_rating = st.feedback("stars", key=f"star_{book_id}")
+                    u_review = st.text_input("Comments:", key=f"rev_{book_id}")
+
+                    if st.button("Submit to Library", key=f"btn_{book_id}"):
+                        try:
+                            data = {
+                                "user_id": st.session_state.user_id,
+                                "book_id": int(book_id),
+                                "rating": u_rating if u_rating is not None else 0,
+                                "review": u_review
+                            }
+                            st_supabase.table("user_interactions").insert(data).execute()
+                            st.success("Saved to the Book Club! 🥂")
+                        except Exception as e:
+                            st.error(f"Error: {e}")
         else:
             st.error("Please enter a description first!")
