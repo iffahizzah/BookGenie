@@ -29,7 +29,7 @@ def show_library_page(st_supabase, df_books):
     for item in user_data:
         # Find the book details in your dataframe using the book_id
         # We use .get() or a filter to find the row
-        book_row = df_books[df_books['id'] == item['book_id']]
+        book_row = df_books[df_books['book_id'] == item['book_id']]
         
         if not book_row.empty:
             book = book_row.iloc[0]
