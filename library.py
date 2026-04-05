@@ -18,7 +18,7 @@ def show_library_page(st_supabase, df_books):
         st.warning("Please log in to see your saved books!")
         return
 
-    # 1. Fetch the data
+    # 1. Fetch the data from Supabase
     user_data = get_user_library(st_supabase, user_id)
 
     if not user_data:
@@ -27,8 +27,7 @@ def show_library_page(st_supabase, df_books):
 
     # 2. Loop through and display
     for item in user_data:
-        # Find the book details in your dataframe using the book_id
-        # We use .get() or a filter to find the row
+        # Find the book details in your dataframe using 'book_id' (Column E in your CSV)
         book_row = df_books[df_books['book_id'] == item['book_id']]
         
         if not book_row.empty:
@@ -38,19 +37,26 @@ def show_library_page(st_supabase, df_books):
                 col1, col2 = st.columns([1, 4])
                 
                 with col1:
-                    # Using the Goodreads image if you have it
-                    st.image(book['image_url'], use_container_width=True)
+                    # ✅ FALLBACK: Since we don't have image_url, show a nice icon card
+                    st.markdown("""
+                        <div style="background-color: #262730; border-radius: 10px; height: 150px; display: flex; align-items: center; justify-content: center; border: 1px solid #464b5d;">
+                            <h1 style="margin:0;">📘</h1>
+                        </div>
+                    """, unsafe_allow_html=True)
                 
                 with col2:
                     st.subheader(book['title'])
-                    st.caption(f"By {book['authors']}")
+                    # We'll use genres as a caption since authors isn't in your main CSV view
+                    st.caption(f"Genres: {book['genres']}") 
+                    
                     st.write(f"**Your Rating:** {'⭐' * item['rating']}")
-                    st.write(f"**Your Review:** {item['review']}")
+                    st.info(f"**Your Review:** {item['review']}")
                     
                     # Buttons for external links and editing
                     sub_col1, sub_col2 = st.columns(2)
                     with sub_col1:
-                        st.link_button("📖 View on Goodreads", book['goodreads_url'])
+                        # ✅ FIXED: Matches your CSV column 'url'
+                        st.link_button("📖 View on Goodreads", book['url'])
                     
                     with sub_col2:
                         with st.expander("Edit My Review"):
