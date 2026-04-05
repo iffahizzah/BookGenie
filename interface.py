@@ -97,7 +97,7 @@ def show_profile_page(st_supabase):
                     except Exception as e:
                         st.error("Failed to update password.")
                         
-def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_predictions, get_recommendations, np):
+def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_predictions, get_recommendations, np, st_supabase):
     st.title("🧞‍♂️ BookGenie: Your AI Librarian")
     st.markdown(f"Welcome back! Type a book summary below, and I'll find its genre and similar reads!")
     
@@ -128,24 +128,28 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                     st.subheader("📚 More Books Like This")
                     for i in range(len(recs_df)):
                         book = recs_df.iloc[i]
-                        score = scores[i]
+                        book_id = book['book_id'] # Get the ID from your new CSV
+                        
                         with st.expander(f"📖 {book['title']}"):
-                            #st.write(f"**Similarity Match:** {np.round(score * 100, 2)}%")
-                            #st.write(f"**Genres:** {book.get('revised_genres', 'N/A')}")
-                            #st.write("---")
                             st.write(f"_{book['description']}_")
-                            user_rating = st.feedback("stars", key=f"star_{rec['book_id']}")
-                            user_review = st.text_input("Leave a comment for the Book Club:", key=f"rev_{rec['book_id']}")
+                            st.divider()
+                            
+                            # RATING AND REVIEW SECTION
+                            st.write("**Book Club Feedback**")
+                            user_rating = st.feedback("stars", key=f"star_{book_id}")
+                            user_review = st.text_input("Leave a comment:", key=f"rev_{book_id}")
     
-    if st.button("Submit to Library", key=f"btn_{rec['book_id']}"):
-        # This sends the data to your Supabase table!
-        data = {
-            "user_id": st.session_state.user_id, # From your auth logic
-            "book_id": rec['book_id'],
-            "rating": user_rating,
-            "review": user_review
-        }
-        st_supabase.table("user_interactions").insert(data).execute()
-        st.success("Genie saved your feedback! ✨")
+                            if st.button("Submit to Library", key=f"btn_{book_id}"):
+                                try:
+                                    data = {
+                                        "user_id": st.session_state.user_id,
+                                        "book_id": int(book_id),
+                                        "rating": user_rating if user_rating is not None else 0,
+                                        "review": user_review
+                                    }
+                                    st_supabase.table("user_interactions").insert(data).execute()
+                                    st.success("Genie saved your feedback! ✨")
+                                except Exception as e:
+                                    st.error(f"Error saving: {e}")
         else:
             st.error("Please enter a description first!")
