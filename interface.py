@@ -144,7 +144,7 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                                     "rating": u_rating if u_rating is not None else 0,
                                     "review": u_review
                                 }
-                                st_supabase.table("user_interactions").insert(data).execute()
+                                st_supabase.table("user_interaction").insert(data).execute()
                                 st.success("Saved to the Book Club! 🥂")
                             except Exception as e:
                                 st.error(f"Error: {e}")
