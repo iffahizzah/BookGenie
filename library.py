@@ -10,7 +10,7 @@ def get_user_library(st_supabase, user_id):
         return []
 
 def show_library_page(st_supabase, df_books):
-    st.title("📚 My BookGenie Library")
+    st.title("My Library")
     
     user_id = st.session_state.get('user_id')
     if not user_id:
@@ -57,6 +57,6 @@ def show_library_page(st_supabase, df_books):
                                     "review": new_text
                                 }).eq("id", item['id']).execute()
                                 
-                                st.toast(f"✅ Saved: {book['title']}!", icon='🧞‍♂️')
+                                st.toast(f"Changed saved for {book['title']}!")
                                 time.sleep(1)
                                 st.rerun()
