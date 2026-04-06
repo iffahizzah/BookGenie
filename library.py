@@ -9,8 +9,10 @@ def get_user_library(st_supabase, user_id):
         st.error(f"Error fetching library: {e}")
         return []
 
+import time
+
 def show_library_page(st_supabase, df_books):
-    st.title("My Library")
+    st.title("📚 My Library")
     
     user_id = st.session_state.get('user_id')
     if not user_id:
@@ -18,46 +20,76 @@ def show_library_page(st_supabase, df_books):
         return
 
     user_data = get_user_library(st_supabase, user_id)
-
+    
     if not user_data:
         st.info("Your library is empty. Go find some books to rate!")
         return
 
-    for item in user_data:
-        book_row = df_books[df_books['book_id'] == item['book_id']]
+    tab1, tab2 = st.tabs(["⭐ Reviewed Books", "❤️ Wishlist"])
+
+    with tab1:
+        # Filter: Not in wishlist
+        reviewed_books = [item for item in user_data if not item.get('wishlist', False)]
         
-        if not book_row.empty:
-            book = book_row.iloc[0]
+        if not reviewed_books:
+            st.info("You haven't reviewed any books yet.")
+        else:
+            for item in reviewed_books:
+                display_book_card(item, df_books, st_supabase, is_wishlist_view=False)
+
+    with tab2:
+        # Filter: Is in wishlist
+        wishlist_items = [item for item in user_data if item.get('wishlist', False)]
+        
+        if not wishlist_items:
+            st.info("Your wishlist is empty. Heart some books to see them here!")
+        else:
+            for item in wishlist_items:
+                display_book_card(item, df_books, st_supabase, is_wishlist_view=True)
+
+def display_book_card(item, df_books, st_supabase, is_wishlist_view):
+    book_row = df_books[df_books['book_id'] == item['book_id']]
+    
+    if not book_row.empty:
+        book = book_row.iloc[0]
+        
+        with st.container(border=True):
+            col1, col2 = st.columns([1, 4])
             
-            with st.container(border=True):
-                col1, col2 = st.columns([1, 4])
+            with col1:
+                st.image("https://cdn-icons-png.flaticon.com/512/3429/3429149.png", use_container_width=True)
+            
+            with col2:
+                st.subheader(book['title'])
+                st.caption(f"Genres: {book['genres']}")
                 
-                with col1:
-                    # Balanced placeholder image
-                    st.image("https://cdn-icons-png.flaticon.com/512/3429/3429149.png", use_container_width=True)
-                
-                with col2:
-                    st.subheader(book['title'])
-                    st.caption(f"Book Description: {book['description']}")
-                    st.caption(f"Genres: {book['genres']}")
+                if not is_wishlist_view:
                     st.write(f"**Your Rating:** {'⭐' * item['rating']}")
                     st.info(f"**Review:** {item['review']}")
-                    
-                    sub1, sub2 = st.columns(2)
-                    with sub1:
-                        st.link_button("📖 View on Goodreads", book['url'])
-                    
-                    with sub2:
+                else:
+                    st.write("📍 *Currently in your reading list.*")
+
+                sub1, sub2 = st.columns(2)
+                with sub1:
+                    st.link_button("📖 View on Goodreads", book['url'], use_container_width=True)
+                
+                with sub2:
+                    if not is_wishlist_view:
                         with st.expander("Edit My Review"):
                             new_rating = st.slider("Rating", 1, 5, int(item['rating']), key=f"r_{item['id']}")
                             new_text = st.text_area("Review", item['review'], key=f"t_{item['id']}")
                             
-                            if st.button("Save Changes", key=f"b_{item['id']}"):
+                            if st.button("Save Changes", key=f"b_{item['id']}", use_container_width=True):
                                 st_supabase.table("user_interaction").update({
                                     "rating": new_rating, 
                                     "review": new_text
                                 }).eq("id", item['id']).execute()
-                                
-                                st.toast(f"Changed saved for {book['title']}!")
+                                st.toast("Changes saved!")
                                 time.sleep(1)
                                 st.rerun()
+                    else:
+                        if st.button("🗑️ Remove from Wishlist", key=f"del_{item['id']}", use_container_width=True):
+                            st_supabase.table("user_interaction").delete().eq("id", item['id']).execute()
+                            st.toast("Removed from wishlist!")
+                            time.sleep(1)
+                            st.rerun()
