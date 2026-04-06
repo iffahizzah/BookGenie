@@ -93,7 +93,7 @@ def show_profile_page(st_supabase):
                         
 def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_predictions, get_recommendations, np, st_supabase):
     st.title("🧞‍♂️ BookGenie: Your AI Librarian")
-    st.markdown(f"Welcome back! Type a book summary below, and I'll find its genre and top 5 similar reads!")
+    st.markdown(f"Welcome back! Type a book summary below, and I'll find its genre and top 5 books that matched the description!")
     
     user_query = st.text_area(
         "What kind of story is on your mind?", 
@@ -137,7 +137,7 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                     st.write(f"_{book['description']}_")
                     st.divider()
                     
-                    st.write("**Book Club Feedback**")
+                    st.write("**Book Feedback**")
                     u_rating = st.feedback("stars", key=f"star_{book_id}")
                     u_review = st.text_input("Comments:", key=f"rev_{book_id}")
 
@@ -155,6 +155,6 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                                     "review": u_review
                                 }
                                 st_supabase.table("user_interaction").insert(data).execute()
-                                st.success("Saved to the Book Club! 🥂")
+                                st.success("Saved to your library!")
                             except Exception as e:
                                 st.error(f"Error: {e}")
