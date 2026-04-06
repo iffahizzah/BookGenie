@@ -28,7 +28,6 @@ def show_library_page(st_supabase, df_books):
     tab1, tab2 = st.tabs(["❤️ Wishlist", "⭐ Reviewed Books",])
 
     with tab1:
-        # Filter: Is in wishlist
         wishlist_items = [item for item in user_data if item.get('wishlist', False)]
         
         if not wishlist_items:
@@ -38,7 +37,6 @@ def show_library_page(st_supabase, df_books):
                 display_book_card(item, df_books, st_supabase, is_wishlist_view=True)
 
     with tab2:
-        # Filter: Not in wishlist
         reviewed_books = [item for item in user_data if not item.get('wishlist', False)]
         
         if not reviewed_books:
@@ -62,6 +60,7 @@ def display_book_card(item, df_books, st_supabase, is_wishlist_view):
             
             with col2:
                 st.subheader(book['title'])
+                st.caption(f"Description: {book['description']}")
                 st.caption(f"Genres: {book['genres']}")
                 
                 if not is_wishlist_view:
@@ -70,29 +69,42 @@ def display_book_card(item, df_books, st_supabase, is_wishlist_view):
                 else:
                     st.write("📍 *Currently in your reading list.*")
 
-                sub1, sub2, sub3 = st.columns(3)
-                with sub1:
-                    st.link_button("📖 View on Goodreads", book['url'], use_container_width=True)
+                if is_wishlist_view:
+                    sub1, sub2, sub3 = st.columns(3)
+                    
+                    with sub1:
+                        st.link_button("📖 View on Goodreads", book['url'], use_container_width=True)
 
-                with sub2:
-                    with st.expander("⭐ Mark as Read"):
-                        #reuse same review/rating logic here
-                        w_rating = st.feedback("stars", key=f"wr_{item['id']}")
-                        w_review = st.text_area("What did you think?", key=f"wt_{item['id']}")
-                        
-                        if st.button("Submit & Move to Library", key=f"wb_{item['id']}", use_container_width=True):
-                            st_supabase.table("user_interaction").update({
-                                "wishlist": False,
-                                "rating": w_rating if w_rating is not None else 0,
-                                "review": w_review
-                            }).eq("id", item['id']).execute()
+                    with sub2:
+                        with st.expander("⭐ Mark as Read"):
+                            w_rating = st.feedback("stars", key=f"wr_{item['id']}")
+                            w_review = st.text_area("What did you think?", key=f"wt_{item['id']}")
                             
-                            st.success("Book moved to your reviewed collection!")
+                            if st.button("Submit & Move", key=f"wb_{item['id']}", use_container_width=True):
+                                st_supabase.table("user_interaction").update({
+                                    "wishlist": False,
+                                    "rating": w_rating if w_rating is not None else 0,
+                                    "review": w_review
+                                }).eq("id", item['id']).execute()
+                                
+                                st.success("Moved to library!")
+                                time.sleep(1)
+                                st.rerun()
+
+                    with sub3:
+                        if st.button("🗑️ Remove", key=f"del_{item['id']}", use_container_width=True):
+                            st_supabase.table("user_interaction").delete().eq("id", item['id']).execute()
+                            st.toast("Removed!")
                             time.sleep(1)
                             st.rerun()
                 
-                with sub3:
-                    if not is_wishlist_view:
+                else:
+                    sub1, sub2 = st.columns(2)
+                    
+                    with sub1:
+                        st.link_button("📖 View on Goodreads", book['url'], use_container_width=True)
+
+                    with sub2:
                         with st.expander("Edit My Review"):
                             new_rating = st.slider("Rating", 1, 5, int(item['rating']), key=f"r_{item['id']}")
                             new_text = st.text_area("Review", item['review'], key=f"t_{item['id']}")
@@ -105,9 +117,3 @@ def display_book_card(item, df_books, st_supabase, is_wishlist_view):
                                 st.toast("Changes saved!")
                                 time.sleep(1)
                                 st.rerun()
-                    else:
-                        if st.button("🗑️ Remove from Wishlist", key=f"del_{item['id']}", use_container_width=True):
-                            st_supabase.table("user_interaction").delete().eq("id", item['id']).execute()
-                            st.toast("Removed from wishlist!")
-                            time.sleep(1)
-                            st.rerun()
