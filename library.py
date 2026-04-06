@@ -81,14 +81,13 @@ def display_book_card(item, df_books, st_supabase, is_wishlist_view):
                         w_review = st.text_area("What did you think?", key=f"wt_{item['id']}")
                         
                         if st.button("Submit & Move to Library", key=f"wb_{item['id']}", use_container_width=True):
-                            #update the existing row
                             st_supabase.table("user_interaction").update({
                                 "wishlist": False,
                                 "rating": w_rating if w_rating is not None else 0,
                                 "review": w_review
                             }).eq("id", item['id']).execute()
                             
-                            st.success("Book moved to your reviewed collection! 🥂")
+                            st.success("Book moved to your reviewed collection!")
                             time.sleep(1)
                             st.rerun()
                 
