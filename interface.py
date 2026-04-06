@@ -100,6 +100,11 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
         height=150, 
         placeholder="e.g., A detective solving a mystery in a futuristic city..."
     )
+
+    if not user_query:
+        st.session_state.search_done = False
+        st.session_state.genres = []
+        st.session_state.recs_df = None
     
     # 1. SEARCH SECTION
     if st.button("Submit"):
