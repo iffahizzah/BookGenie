@@ -122,7 +122,7 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                 st.success(f"✅ {g}")
 
         with col2:
-            st.subheader("📚 Top 5 Books that mAtches Your Description")
+            st.subheader("📚 Top 5 Books that Matches Your Description")
             for i in range(len(st.session_state.recs_df)):
                 book = st.session_state.recs_df.iloc[i]
                 book_id = book['book_id']
