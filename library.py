@@ -87,7 +87,7 @@ def display_book_card(item, df_books, st_supabase, is_wishlist_view):
                                     "review": w_review
                                 }).eq("id", item['id']).execute()
                                 
-                                st.success("Moved to library!")
+                                st.success("Moved to Reviewed Book!")
                                 time.sleep(1)
                                 st.rerun()
 
