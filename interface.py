@@ -141,20 +141,39 @@ def show_main_genie_page(model, tokenizer, mlb, df, library_embeddings, get_pred
                     u_rating = st.feedback("stars", key=f"star_{book_id}")
                     u_review = st.text_input("Comments:", key=f"rev_{book_id}")
 
-                    if st.button("Submit to Library", key=f"btn_{book_id}"):
-                        # Safety check for user_id
-                        user_id = st.session_state.get("user_id")
-                        if not user_id:
-                            st.error("User ID not found. Please log in again.")
-                        else:
-                            try:
+                    col_btn1, col_btn2 = st.columns(2)
+
+                    with col_btn1:
+                        if st.button("Submit Review", key=f"btn_{book_id}", type="primary", use_container_width=True):
+                            user_id = st.session_state.get("user_id")
+                            if not user_id:
+                                st.error("User ID not found. Please log in again.")
+                            else:
+                                try:
+                                    data = {
+                                        "user_id": user_id,
+                                        "book_id": int(book_id),
+                                        "rating": u_rating if u_rating is not None else 0,
+                                        "review": u_review,
+                                        "wishlist": False
+                                    }
+                                    st_supabase.table("user_interaction").insert(data).execute()
+                                    st.success("Saved to your library!")
+                                except Exception as e:
+                                    st.error(f"Error: {e}")
+
+                    with col_btn2:
+                        if st.button("❤️ Wishlist", key=f"wish_{book_id}", use_container_width=True):
+                            user_id = st.session_state.get("user_id")
+                            if user_id:
                                 data = {
                                     "user_id": user_id,
                                     "book_id": int(book_id),
-                                    "rating": u_rating if u_rating is not None else 0,
-                                    "review": u_review
+                                    "wishlist": True,
+                                    "rating": 0,
+                                    "review": "Added to Wishlist"
                                 }
                                 st_supabase.table("user_interaction").insert(data).execute()
-                                st.success("Saved to your library!")
-                            except Exception as e:
-                                st.error(f"Error: {e}")
+                                st.toast("Added to your Book Wishlist! ❤️")
+                            else:
+                                st.error("Please login first!")
